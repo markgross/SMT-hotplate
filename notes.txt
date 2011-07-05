@@ -1,0 +1,8 @@
+Notes and comments on this SMT hotplate project.
+
+1) IR temperature sensor likes 3.3V power but its digital IO is 5V tolerant.
+2) I think the PID loop could be replaces with a Kalman or something that
+understands thermal physics a bit. 
+3) I wonder how much of the thermal properties can be measured from this
+configuration? 
+
