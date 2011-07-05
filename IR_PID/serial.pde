@@ -1,4 +1,5 @@
 //serialInterface
+// text command interface hacked up to work better with python GUI.
 //
 // Slightly modified for use with SMT Hot Plate soldering system.
 // Jim Larson, January 2010
@@ -23,17 +24,14 @@ int myBaud = 115200;
 
 int incomingByte = 0;
 float delta = 1.0;
-boolean autoupdate;
-boolean printmode = 0;
 
 unsigned long lastUpdateTime = 0;
 void setupSerialInterface()  {
   Serial.begin(myBaud);
-  //Serial.println("\nWelcome to the HPSS, the Hot Plate Solder System for Arduino");
-  //Serial.println("\nBased on the BBCC, the Bare Bones Coffee Controller for Arduino");
-  //Serial.println("Send back one or more characters to setup the controller.");
-  //Serial.println("If this is your initial run, please enter 'R' to Reset the EEPROM.");
-  //Serial.println("Enter '?' for help.  Here's to a great cup!");
+  setP(30.0); // make sure to keep the decimal point on these values
+  setI(0.0);  // make sure to keep the decimal point on these values
+  setD(0.0);  // make sure to keep the decimal point on these values
+  setTargetTemp(20.0); // here too
 }
 
 void printHelp() {
@@ -59,7 +57,7 @@ void updateSerialInterface() {
       setP(30.0); // make sure to keep the decimal point on these values
       setI(0.0);  // make sure to keep the decimal point on these values
       setD(0.0);  // make sure to keep the decimal point on these values
-      setTargetTemp(100.0); // here too
+      setTargetTemp(20.0); // here too
     } 
     if (incomingByte == 'P') {
       setP(getP() + delta);

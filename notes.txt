@@ -1,8 +1,45 @@
 Notes and comments on this SMT hotplate project.
 
+The Arduino code came from Jim Larson:
+http://www.instructables.com/id/Closing-the-Loop-on-Surface-Mount-Soldering/step2/Software-for-Control
+
+Wich was in tern was derived from:
+http://www.arduino.cc/playground/Main/BarebonesPIDForEspresso
+
+The pyton UI code is a hack job derivived from multiple matplotlib samples (too
+many for a clean attribution).
+
+Parts:
+http://www.harborfreight.com/infrared-thermometer-93984.html
+see: http://www.zytemp.com/products/files/TNm_302.pdf for ditital interface.
+http://pjrc.com/store/teensy.html (I used a teensy2)
+http://www.sparkfun.com/products/526
+http://www.sparkfun.com/products/137
+http://www.schmartboard.com/index.asp?page=products_jch&id=122
+1- Elite ESB 301-F single burner hot plate from Fred Meyer.
+25A SSR such as http://www.futurlec.com/Relays/SSR25Apr.shtml
+
+
+notes:
 1) IR temperature sensor likes 3.3V power but its digital IO is 5V tolerant.
-2) I think the PID loop could be replaces with a Kalman or something that
+2) I think the PID loop could be replaced with a Kalman or something that
 understands thermal physics a bit. 
 3) I wonder how much of the thermal properties can be measured from this
 configuration? 
+
+HW mods:
+I plulled apart the IR sensor and removed the laser pointer and added a
+jumper block of 5 pins to the "A G C D V" pin holes at the back of the sensor
+board.  I connected these in the following way:
+A - teensy grnd
+G - 3.3v LDO GND 
+C - teensy D1
+D - teensy D0
+V - 3.3V LDO Vout
+
+The LDO was powered by the teensy 5V and gnd pins.
+
+The SSR was spliced into the BLACK wire of a common power strip and its
+-4 post wired to the teensy gnd, and the 3+ post to PIN_D6 on the teensy
+
 

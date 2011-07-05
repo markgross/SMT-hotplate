@@ -11,6 +11,10 @@
 // since these are zero-crossing relays, it makes sense to just match my local
 // AC frequency, 60hz
 //
+// This code is hard wired to a period of 1 second and the duty cycle goes from
+// 0 to 100% int steps of 1ms.  note: the AC current crosses zero every 8.33ms
+// values less than the Nyquist (16.66ms) may not behave as expected.
+//
 // All code released under
 // Creative Commons Attribution-Noncommercial-Share Alike 3.0 
 //----------------------------------------------------------------
@@ -33,9 +37,8 @@ void setupHeater() {
 void updateHeater() {
   boolean h;
   heatCurrentTime = millis();
-  if(heatCurrentTime - heatLastTime >= 1000 or heatLastTime > heatCurrentTime) { //second statement prevents overflow errors
-    // begin cycle
-    _turnHeatElementOnOff(1);  // 
+  if(heatCurrentTime - heatLastTime >= 1000 or heatLastTime > heatCurrentTime) { //second statement prevents roll over / overflow errors
+    _turnHeatElementOnOff(1);  // begin cycle
     heatLastTime = heatCurrentTime;   
   } 
   if (heatCurrentTime - heatLastTime >= heatcycles) {

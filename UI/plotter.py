@@ -17,7 +17,6 @@ class pid_hotplate:
         self.serial = serial.Serial(dev, baudrate=115200, writeTimeout=10)
         self.serial.open()
         self.write('R')
-        self.write('g')
 
     def write(self, data):
         self.serial.write(data)
@@ -25,7 +24,7 @@ class pid_hotplate:
     def read_temp(self):
         self.write(' ')
         result = self.serial.readline().strip()
-        print result
+        #print result
         return result
 
     def get_data(self):
@@ -93,7 +92,7 @@ hotplate = pid_hotplate('/dev/ttyACM0')
 def press(event):
     if len(event.key) == 1:
         hotplate.write(event.key)
-        print event.key
+        #print event.key
 
 f.canvas.mpl_connect('key_press_event', press)
 
