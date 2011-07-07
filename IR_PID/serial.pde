@@ -48,6 +48,19 @@ void printHelp() {
 
 }
 
+float getFloat()
+{
+	float value = 0.0;
+	unsigned char *buf = (unsigned char*) &value;
+        int i;
+
+	for (i = 0; i < sizeof(float); i++) {
+		buf[i] = Serial.read();
+	}
+	return value;
+}
+
+
 void updateSerialInterface() {
   while(Serial.available()){
 
@@ -60,40 +73,17 @@ void updateSerialInterface() {
       setTargetTemp(20.0); // here too
     } 
     if (incomingByte == 'P') {
-      setP(getP() + delta);
-    } 
-    if (incomingByte == 'p') {
-      setP(getP() - delta);
+      setP(getFloat());
     } 
     if (incomingByte == 'I') {
-      setI(getI() + delta);
-    } 
-    if (incomingByte == 'i') {
-      setI(getI() - delta);
+      setI(getFloat());
     } 
     if (incomingByte == 'D') {
-      setD(getD() + delta);
-    } 
-    if (incomingByte == 'd') {
-      setD(getD() - delta);
+      setD(getFloat());
     } 
     if (incomingByte == 'T') {
-      setTargetTemp(getTargetTemp() + delta);
+      setTargetTemp(getFloat());
     } 
-    if (incomingByte == 't') {
-      setTargetTemp(getTargetTemp() - delta);
-    }
-    if (incomingByte == '+') {
-      delta *= 10.0;
-      if (delta > MAX_DELTA)
-        delta = MAX_DELTA;
-    } 
-    if (incomingByte == '-') {
-      delta /= 10.0;
-      if (delta < MIN_DELTA)
-        delta = MIN_DELTA;
-
-    }
     if (incomingByte == ' ') {
         printStatusForGraph();
     }

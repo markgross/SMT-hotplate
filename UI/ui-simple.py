@@ -10,6 +10,7 @@ import matplotlib
 matplotlib.use( 'WXAgg' )
 
 import serial
+import struct
 import time
 
 (UpdateTempEvent, EVT_UPDATE_VALUES) = wx.lib.newevent.NewEvent()
@@ -32,9 +33,25 @@ class pid_hotplate:
         result = self.serial.readline().strip()
         return result
 
+    def setP(self, p):
+        Pstr = 'P' + struct.pack('f', p)
+        self.write(Pstr)
+
+    def setI(self, i):
+        Istr = 'I' + struct.pack('f', i)
+        self.write(Istr)
+
+    def setD(self, d):
+        Dstr = 'D' + struct.pack('f', d)
+        self.write(Dstr)
+
+    def setTarget(self, temp):
+        Tstr = 'T' + struct.pack('f', temp)
+        self.write(Tstr)
 
 
 hotplate = pid_hotplate()
+
 
 class MyDialog(wx.Dialog):
     def __init__(self, *args, **kwds):
@@ -42,19 +59,23 @@ class MyDialog(wx.Dialog):
         kwds["style"] = wx.DEFAULT_DIALOG_STYLE
         wx.Dialog.__init__(self, *args, **kwds)
         self.label_1 = wx.StaticText(self, -1, _("PID_P :"), style=wx.ALIGN_RIGHT)
-        self.PidPCtrl = wx.SpinCtrl(self, -1, "0", min=-100, max=100)
+        self.text_ctrl_P = wx.TextCtrl(self, -1, "", style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE)
         self.label_2 = wx.StaticText(self, -1, _("PID_I :"), style=wx.ALIGN_RIGHT)
-        self.PidICtrl = wx.SpinCtrl(self, -1, "0", min=-100, max=100)
+        self.text_ctrl_I = wx.TextCtrl(self, -1, "", style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE)
         self.label_3 = wx.StaticText(self, -1, _("PID_D :"), style=wx.ALIGN_RIGHT)
-        self.PidDCtrl = wx.SpinCtrl(self, -1, "0", min=-100, max=100)
+        self.text_ctrl_D = wx.TextCtrl(self, -1, "", style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE)
         self.label_4 = wx.StaticText(self, -1, _("Target Temp :"), style=wx.ALIGN_RIGHT)
-        self.TargTempCtrl = wx.SpinCtrl(self, -1, "0", min=-100, max=100)
+        self.text_ctrl_T = wx.TextCtrl(self, -1, "", style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE)
         self.ApplySettings = wx.Button(self, -1, _("Ok"))
         self.Cancel = wx.Button(self, -1, _("Cancel"))
 
         self.__set_properties()
         self.__do_layout()
 
+        #self.Bind(wx.EVT_TEXT_ENTER, self.updateData, self.text_ctrl_P)
+        #self.Bind(wx.EVT_TEXT_ENTER, self.updateData, self.text_ctrl_I)
+        #self.Bind(wx.EVT_TEXT_ENTER, self.updateData, self.text_ctrl_D)
+        #self.Bind(wx.EVT_TEXT_ENTER, self.updateData, self.text_ctrl_T)
         self.Bind(wx.EVT_BUTTON, self.OnOk, self.ApplySettings)
         self.Bind(wx.EVT_BUTTON, self.OnCancle, self.Cancel)
         # end wxGlade
@@ -68,13 +89,13 @@ class MyDialog(wx.Dialog):
         # begin wxGlade: MyDialog.__do_layout
         grid_sizer_1 = wx.FlexGridSizer(4, 2, 0, 0)
         grid_sizer_1.Add(self.label_1, 0, wx.EXPAND|wx.ALIGN_RIGHT, 0)
-        grid_sizer_1.Add(self.PidPCtrl, 0, wx.EXPAND, 0)
+        grid_sizer_1.Add(self.text_ctrl_P, 0, wx.EXPAND, 0)
         grid_sizer_1.Add(self.label_2, 0, wx.EXPAND|wx.ALIGN_RIGHT, 0)
-        grid_sizer_1.Add(self.PidICtrl, 0, wx.EXPAND, 0)
+        grid_sizer_1.Add(self.text_ctrl_I, 0, wx.EXPAND, 0)
         grid_sizer_1.Add(self.label_3, 0, wx.EXPAND|wx.ALIGN_RIGHT, 0)
-        grid_sizer_1.Add(self.PidDCtrl, 0, wx.EXPAND, 0)
+        grid_sizer_1.Add(self.text_ctrl_D, 0, wx.EXPAND, 0)
         grid_sizer_1.Add(self.label_4, 0, wx.EXPAND|wx.ALIGN_RIGHT, 0)
-        grid_sizer_1.Add(self.TargTempCtrl, 0, wx.EXPAND, 0)
+        grid_sizer_1.Add(self.text_ctrl_T, 0, wx.EXPAND, 0)
         grid_sizer_1.Add(self.ApplySettings, 0, wx.EXPAND, 0)
         grid_sizer_1.Add(self.Cancel, 0, wx.EXPAND, 0)
         self.SetSizer(grid_sizer_1)
@@ -82,19 +103,43 @@ class MyDialog(wx.Dialog):
         self.Layout()
         # end wxGlade
 
- 
-    def OnOk(self, event): # wxGlade: MyDialog.<event_handler>
-        print "Event handler `OnOk' not implemented!"
-        newP = self.PidPCtrl.get_value()
-        newI = self.PidPCtrl.get_value()
-        newD = self.PidPCtrl.get_value()
-        newTarg = self.PidPCtrl.get_value()
+    def updateData(self, event): # wxGlade: MyDialog.<event_handler>
+        value = self.text_ctrl_P.GetValue()
+        try:
+            P = float(value)
+            hotplate.setP(P)
+        except ValueError:
+            self.text_ctrl_P.SetValue("")
 
+        value = self.text_ctrl_I.GetValue()
+        try:
+            I = float(value)
+            hotplate.setI(I)
+        except ValueError:
+            self.text_ctrl_I.SetValue("")
+
+        value = self.text_ctrl_D.GetValue()
+        try:
+            D = float(value)
+            hotplate.setD(D)
+        except ValueError:
+            self.text_ctrl_D.SetValue("")
+
+        value = self.text_ctrl_T.GetValue()
+        try:
+            T = float(value)
+            hotplate.setTarget(T)
+        except ValueError:
+            self.text_ctrl_T.SetValue("")
+
+
+    def OnOk(self, event): # wxGlade: MyDialog.<event_handler>
+        self.updateData(event)
+        self.Close(True)
         event.Skip()
 
     def OnCancle(self, event): # wxGlade: MyDialog.<event_handler>
-        print "Event handler `OnCancle' not implemented!"
-        event.Skip()
+        self.Close(True)
 
 # end of class MyDialog
 
@@ -222,12 +267,14 @@ class SMT_Reflow(wx.Frame):
         self.flux = 200
         self.hg = 220
         self.no_hg = 240
-        self.target_temp = 15
+        self.running = True
 
         self.graph = TempeturePlotPanel(self )
         # Menu Bar
         self.frame_1_menubar = wx.MenuBar()
         self.smt_control = wx.Menu()
+        settings = self.smt_control.Append(11, "change Settings", "change Settings")
+
         self.frame_1_menubar.Append(self.smt_control, _("SMT control"))
         self.SetMenuBar(self.frame_1_menubar)
         # Menu Bar end
@@ -253,6 +300,9 @@ class SMT_Reflow(wx.Frame):
         self.Bind(wx.EVT_TOOL, self.OnFlux, id=3)
         self.Bind(wx.EVT_TOOL, self.OnHg, id=4)
         self.Bind(wx.EVT_TOOL, self.OnHgFree, id=5)
+        self.Bind(wx.EVT_MENU, self.SettingsDlg, id=11)
+        self.Bind(wx.EVT_CLOSE, self.OnClose)
+        #self.Bind(wx.EVT_MENU, self.SettingsDlg, settings)
         # end wxGlade
 
     def __set_properties(self):
@@ -281,21 +331,20 @@ class SMT_Reflow(wx.Frame):
         self.Layout()
         # end wxGlade
 
-    def Set_target(self, t):
-        count = int(target[len(target) - 1] - t)
-        if 0 < count:
-            hotplate.write(count*'t')
+   
+    def SettingsDlg(self, e):
+        dlg = MyDialog(self)
+        dlg.ShowModal()
+        dlg.Destroy()
 
-        if 0 > count:
-                hotplate.write((-count)*'T')
-    
     def update_thread(self):
         global temps
         global times
         global target
+
+        hotplate.setTarget(15)
         start_time = time.time()
-        while True:
-            self.Set_target(self.target_temp)
+        while self.running:
             current_pos = time.time() - start_time
             self.data = hotplate.read_temp().split(' ')
             # If we got new data then append it to the list of
@@ -326,19 +375,25 @@ class SMT_Reflow(wx.Frame):
         self.graph.draw()
 
     def OnOn(self, e):
-        self.target_temp = 15
+        hotplate.setTarget(15)
 
     def OnBoil(self, e):
-        self.target_temp = self.boil 
+        hotplate.setTarget(self.boil) 
 
     def OnFlux(self, e):
-        self.target_temp = self.flux
+        hotplate.setTarget(self.flux) 
 
     def OnHg(self, e):
-        self.target_temp = self.hg
+        hotplate.setTarget(self.hg) 
 
     def OnHgFree(self, e):
-        self.target_temp = self.no_hg
+        hotplate.setTarget(self.no_hg) 
+
+    def OnClose(self, e):
+        self.running = False
+        time.sleep(1)
+        self.Destroy()
+        
 
 
 # end of class SMT_Reflow
