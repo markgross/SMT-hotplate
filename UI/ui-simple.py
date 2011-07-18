@@ -15,9 +15,9 @@ import time
 
 (UpdateTempEvent, EVT_UPDATE_VALUES) = wx.lib.newevent.NewEvent()
 
-temps = [20.0]
+temps = [1.0]
 times = [0.0]
-target = [20.0]
+target = [1.0]
 
 class pid_hotplate:
 
@@ -342,7 +342,7 @@ class SMT_Reflow(wx.Frame):
         global times
         global target
 
-        hotplate.setTarget(15)
+        hotplate.setTarget(1.0)
         start_time = time.time()
         while self.running:
             current_pos = time.time() - start_time
@@ -375,7 +375,7 @@ class SMT_Reflow(wx.Frame):
         self.graph.draw()
 
     def OnOn(self, e):
-        hotplate.setTarget(15)
+        hotplate.setTarget(1.0)
 
     def OnBoil(self, e):
         hotplate.setTarget(self.boil) 

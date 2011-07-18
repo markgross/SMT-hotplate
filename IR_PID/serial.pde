@@ -28,10 +28,10 @@ float delta = 1.0;
 unsigned long lastUpdateTime = 0;
 void setupSerialInterface()  {
   Serial.begin(myBaud);
-  setP(30.0); // make sure to keep the decimal point on these values
-  setI(0.0);  // make sure to keep the decimal point on these values
-  setD(0.0);  // make sure to keep the decimal point on these values
-  setTargetTemp(20.0); // here too
+  setP(200.0); // make sure to keep the decimal point on these values
+  setI(0.10);  // make sure to keep the decimal point on these values
+  setD(100.0);  // make sure to keep the decimal point on these values
+  setTargetTemp(1.0); // here too
 }
 
 void printHelp() {
@@ -67,10 +67,10 @@ void updateSerialInterface() {
     incomingByte = Serial.read();
     if (incomingByte == 'R') {
       delta = 1.0;
-      setP(30.0); // make sure to keep the decimal point on these values
-      setI(0.0);  // make sure to keep the decimal point on these values
-      setD(0.0);  // make sure to keep the decimal point on these values
-      setTargetTemp(20.0); // here too
+      setP(250.0); // make sure to keep the decimal point on these values
+      setI(0.10);  // make sure to keep the decimal point on these values
+      setD(100.0);  // make sure to keep the decimal point on these values
+      setTargetTemp(1.0); // here too
     } 
     if (incomingByte == 'P') {
       setP(getFloat());
