@@ -3,10 +3,10 @@ Notes and comments on this SMT hotplate project.
 The Arduino code came from Jim Larson:
 http://www.instructables.com/id/Closing-the-Loop-on-Surface-Mount-Soldering/step2/Software-for-Control
 
-Wich was in tern was derived from:
+Which was in turn was derived from:
 http://www.arduino.cc/playground/Main/BarebonesPIDForEspresso
 
-The pyton UI code is a hack job derivived from multiple matplotlib samples (too
+The pyton UI code is a hack job derived from multiple matplotlib samples (too
 many for a clean attribution).
 
 Parts:
@@ -28,7 +28,7 @@ understands thermal physics a bit.
 configuration? 
 
 HW mods:
-I plulled apart the IR sensor and removed the laser pointer and added a
+I pulled apart the IR sensor and removed the laser pointer and added a
 jumper block of 5 pins to the "A G C D V" pin holes at the back of the sensor
 board.  I connected these in the following way:
 A - teensy grnd
