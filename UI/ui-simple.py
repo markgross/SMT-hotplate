@@ -23,6 +23,9 @@ lock = thread.allocate_lock()
 temps = [1.0]
 times = [0.0]
 target = [1.0]
+p_val = [1.0]
+i_val = [1.0]
+d_val = [1.0]
 
 class pid_hotplate:
 
@@ -200,6 +203,9 @@ class TempeturePlotPanel (PlotPanel):
         global times
         global target
         global lock
+        global p_val
+        global i_val
+        global d_val
         """Draw data."""
 
         lock.acquire()
@@ -217,7 +223,14 @@ class TempeturePlotPanel (PlotPanel):
             self.subplot.set_xlabel("Time (Seconds)")
             self.subplot.set_ylabel(r'Temperature $^{\circ}$C')
             self.subplot.axis([times[0],1, min_t ,max_t])
-            self.figure.canvas.draw()
+
+            #self.subplot = self.figure.add_subplot( 212 )
+            #self.p_val, = self.subplot.plot(times, p_val)
+            #self.i_val, = self.subplot.plot(times, i_val)
+            #self.d_val, = self.subplot.plot(times, d_val)
+            #self.subplot.set_xlabel("Time (Seconds)")
+            #self.subplot.set_ylabel('P, I, D')
+            #self.figure.canvas.draw()
 
         self.figure.clear( )
         self.figure.suptitle("Live Temperature")
@@ -228,6 +241,15 @@ class TempeturePlotPanel (PlotPanel):
         self.subplot.set_xlabel("Time (Seconds)")
         self.subplot.set_ylabel(r'Temperature $^{\circ}$C')
         self.subplot.axis([times[0],times[len(times)-1] + 1, min_t -1 ,max_t +1])
+
+        #self.subplot = self.figure.add_subplot( 212 )
+        #self.p_val, = self.subplot.plot(times, p_val)
+        #self.i_val, = self.subplot.plot(times, i_val)
+        #self.d_val, = self.subplot.plot(times, d_val)
+        #self.subplot.set_xlabel("Time (Seconds)")
+        #self.subplot.set_ylabel('P, I, D')
+        self.figure.canvas.draw()
+
         self.figure.canvas.draw()
         lock.release()
             
@@ -297,7 +319,7 @@ class SMT_Reflow(wx.Frame):
         self.frame_1_toolbar.SetToolSeparation(5)
         self.frame_1_toolbar.Realize()
 
-        self.graph.SetMinSize((500,200))
+        self.graph.SetMinSize((800,500))
         # end wxGlade
 
     def __do_layout(self):
@@ -319,24 +341,36 @@ class SMT_Reflow(wx.Frame):
         global temps
         global times
         global target
+        global p_val
+        global i_val
+        global d_val
         global lock
+
+        outfile = open("logfile.txt", "w")
 
         hotplate.setTarget(1.0)
         start_time = time.time()
         while self.running:
             current_pos = time.time() - start_time
             self.data = hotplate.read_temp().split(' ')
+            print >>outfile, self.data[0], self.data[1], self.data[2], self.data[3], self.data[4], self.data[5], self.data[6], self.data[7], self.data[8] 
             # If we got new data then append it to the list of
             # temperatures and trim to 240 points
             lock.acquire()
-            temps.append(float(self.data[1]))
             target.append(float(self.data[0]))
+            temps.append(float(self.data[1]))
+            p_val.append(float(self.data[5]))
+            i_val.append(float(self.data[6]))
+            d_val.append(float(self.data[7]))
             times.append(current_pos)
             lock.release()
-            if len(temps) > 240:
-                temps = temps[-240:]
-                times = times[-240:]
-                target = target[-240:]
+            if len(temps) > 120:
+                temps = temps[-120:]
+                times = times[-120:]
+                target = target[-120:]
+                p_val = target[-120:]
+                i_val = target[-120:]
+                d_val = target[-120:]
 
             evt = UpdateTempEvent(
                     target = self.data[0],
@@ -344,13 +378,15 @@ class SMT_Reflow(wx.Frame):
                     P = self.data[2],
                     I = self.data[3],
                     D = self.data[4],
-                    power = self.data[5])
+                    power = self.data[8])
             wx.PostEvent(self, evt)
-            time.sleep(1.0)
+            time.sleep(0.250)
+        outfile.close()
 
     def OnUpdate(self, evt):
-        for i in range(6):
+        for i in range(5):
             self.frame_1_statusbar.SetStatusText(self.data[i], i)
+        self.frame_1_statusbar.SetStatusText(self.data[8], 5)
         self.Refresh(True)
         #if self.on:
         self.graph.draw()
@@ -371,8 +407,9 @@ class SMT_Reflow(wx.Frame):
         hotplate.setTarget(self.no_pb) 
 
     def OnClose(self, e):
+        hotplate.setTarget(0.0)
         self.running = False
-        time.sleep(1.5)
+        time.sleep(0.3)
         self.Destroy()
         
 

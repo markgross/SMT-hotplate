@@ -28,7 +28,7 @@ float delta = 1.0;
 unsigned long lastUpdateTime = 0;
 void setupSerialInterface()  {
   Serial.begin(myBaud);
-  setP(200.0); // make sure to keep the decimal point on these values
+  setP(250.0); // make sure to keep the decimal point on these values
   setI(0.10);  // make sure to keep the decimal point on these values
   setD(100.0);  // make sure to keep the decimal point on these values
   setTargetTemp(1.0); // here too
@@ -109,7 +109,7 @@ void printStatusForGraph() {
   Serial.print(" ");
   printFloat(getD(),PRINT_PLACES_AFTER_DECIMAL);
   Serial.print(" ");
-  printFloat((float)getHeatCycles(), 0);
+  printPIDDebugString(); 
   Serial.println();
 }
 

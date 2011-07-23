@@ -61,18 +61,21 @@ void setP(float p) {
   // set the P gain and store it to eeprom
   pgain = p; 
   writeFloat(p, pgainAddress);
+  iState = 0;
 }
 
 void setI(float i) {
   // set the I gain and store it to eeprom
   igain = i; 
   writeFloat(i, igainAddress);
+  iState = 0;
 }
 
 void setD(float d) {
   // set the D gain and store it to eeprom
   dgain = d; 
   writeFloat(d, dgainAddress);
+  iState = 0;
 }
 
 float updatePID(float targetTemp, float curTemp)
@@ -124,15 +127,15 @@ float updatePID(float targetTemp, float curTemp)
 
 void printPIDDebugString() {
   // A  helper function to keep track of the PID algorithm 
-  Serial.print("PID formula (P + I - D): ");
+  //Serial.print("PID formula (P + I - D): ");
 
-  printFloat(pTerm, 2);
-  Serial.print(" + ");
-  printFloat(iTerm, 2);
-  Serial.print(" - ");
-  printFloat(dTerm, 2);
-  Serial.print(" POWER: ");
-  printFloat(getHeatCycles(), 0);
+  printFloat(pTerm, 4);
+  Serial.print(" ");
+  printFloat(iTerm, 4);
+  Serial.print(" ");
+  printFloat(dTerm, 4);
+  Serial.print(" ");
+  printFloat((float)getHeatCycles(), 0);
   Serial.print(" ");
 
 }
