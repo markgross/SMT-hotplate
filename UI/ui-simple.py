@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+import cProfile
+import pstats
+
 import wx
 
 import thread
@@ -167,18 +170,12 @@ class PlotPanel (wx.Panel):
 
         self._SetSize()
         self.draw()
-        self._resizeflag = False
 
-        self.Bind(wx.EVT_IDLE, self._onIdle)
+        #self.Bind(wx.EVT_IDLE, self._onIdle)
         self.Bind(wx.EVT_SIZE, self._onSize)
 
     def _onSize( self, event ):
-        self._resizeflag = True
-
-    def _onIdle( self, evt ):
-        if self._resizeflag:
-            self._resizeflag = False
-            self._SetSize()
+        self._SetSize()
 
     def _SetSize( self ):
         pixels = tuple( self.parent.GetClientSize() )
@@ -381,9 +378,7 @@ class SMT_Reflow(wx.Frame):
 
 
 # end of class SMT_Reflow
-
-
-if __name__ == "__main__":
+def main():
     import gettext
     gettext.install("app") # replace with the appropriate catalog name
 
@@ -394,3 +389,10 @@ if __name__ == "__main__":
     frame_1.Show()
     listen = thread.start_new_thread(frame_1.update_thread, ())
     app.MainLoop()
+
+if __name__ == "__main__":
+    main()
+    #cProfile.run("main()", "prof.txt")
+    #stats = pstats.Stats("prof.txt")
+    #stats.print_stats()
+
