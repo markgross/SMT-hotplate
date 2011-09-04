@@ -380,7 +380,7 @@ class SMT_Reflow(wx.Frame):
                     D = self.data[4],
                     power = self.data[8])
             wx.PostEvent(self, evt)
-            time.sleep(0.250)
+            time.sleep(0.50)
         outfile.close()
 
     def OnUpdate(self, evt):
@@ -409,7 +409,7 @@ class SMT_Reflow(wx.Frame):
     def OnClose(self, e):
         hotplate.setTarget(0.0)
         self.running = False
-        time.sleep(0.3)
+        time.sleep(0.6)
         self.Destroy()
         
 
