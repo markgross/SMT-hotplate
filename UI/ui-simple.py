@@ -264,9 +264,9 @@ class SMT_Reflow(wx.Frame):
        
         self.on = False
         self.boil = 101
-        self.flux = 200
-        self.pb = 220
-        self.no_pb = 240
+        self.flux = 180
+        self.pb = 200
+        self.no_pb = 220
         self.running = True
 
         self.graph = TempeturePlotPanel(self )
